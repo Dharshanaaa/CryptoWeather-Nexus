@@ -1,5 +1,5 @@
 // Real news API using NewsAPI
-const API_KEY = process.env.NEXT_PUBLIC_NEWS_API_KEY || "YOUR_API_KEY"
+const API_KEY = process.env.NEXT_PUBLIC_NEWS_API_KEY || "pub_77690bf4779665392c86956e74c62b921d084"
 const BASE_URL = "https://newsapi.org/v2"
 
 // Function to fetch crypto news

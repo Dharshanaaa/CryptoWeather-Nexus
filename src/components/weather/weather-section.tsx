@@ -21,7 +21,7 @@ export default async function WeatherSection() {
       {weatherData.map((data, index) => (
         <Link
           key={`${locations[index].lat},${locations[index].lon}`}
-          href={`/pages/location?lat=${locations[index].lat}&lon=${locations[index].lon}`}
+          href={`/pages/city?lat=${locations[index].lat}&lon=${locations[index].lon}`}
           className="block transition-transform hover:scale-[1.02]"
         >
           <WeatherCard
