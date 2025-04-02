@@ -1,26 +1,23 @@
-import { Suspense } from "react";
-import { notFound } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import CryptoDetail from "@/components/crypto/crypto-detail";
 import { CryptoDetailSkeleton } from "@/components/crypto/crypto-detail-skeleton";
 
-export default function CryptoDetailPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  // Decode the slug to get the crypto id
-  const cryptoId = decodeURIComponent(params.slug);
+export default function CryptoPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  // Get the crypto id from query parameters
+  const cryptoId = searchParams.get("id");
 
   // List of valid cryptos
   const validCryptos = ["bitcoin", "ethereum", "solana"];
-
-  // Check if the crypto is valid
-  if (!validCryptos.includes(cryptoId.toLowerCase())) {
-    notFound();
-  }
 
   // Map of crypto ids to display names
   const cryptoNames: Record<string, string> = {
@@ -28,6 +25,19 @@ export default function CryptoDetailPage({
     ethereum: "Ethereum",
     solana: "Solana",
   };
+
+  useEffect(() => {
+    // If no crypto id is provided or it's invalid, redirect to dashboard
+    if (!cryptoId || !validCryptos.includes(cryptoId.toLowerCase())) {
+      router.push("/");
+    } else {
+      setLoading(false);
+    }
+  }, [cryptoId, router]);
+
+  if (loading || !cryptoId) {
+    return <CryptoDetailSkeleton />;
+  }
 
   return (
     <main className="container mx-auto p-4 space-y-6">
@@ -44,9 +54,7 @@ export default function CryptoDetailPage({
         {cryptoNames[cryptoId.toLowerCase()]} Details
       </h1>
 
-      <Suspense fallback={<CryptoDetailSkeleton />}>
-        <CryptoDetail cryptoId={cryptoId.toLowerCase()} />
-      </Suspense>
+      <CryptoDetail cryptoId={cryptoId.toLowerCase()} />
     </main>
   );
 }

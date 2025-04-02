@@ -15,7 +15,7 @@ export default async function CryptoSection() {
       {cryptoData.map((data, index) => (
         <Link
           key={cryptos[index]}
-          href={`/crypto/${encodeURIComponent(cryptos[index])}`}
+          href={`/pages/crypto?id=${encodeURIComponent(cryptos[index])}`}
           className="block transition-transform hover:scale-[1.02]"
         >
           <CryptoCard cryptoId={cryptos[index]} cryptoData={data} />
