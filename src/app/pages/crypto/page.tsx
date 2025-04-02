@@ -5,51 +5,38 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import CityDetail from "@/components/weather/city-detail";
-import { CityDetailSkeleton } from "@/components/weather/city-detail-skeleton";
+import CryptoDetail from "@/components/crypto/crypto-detail";
+import { CryptoDetailSkeleton } from "@/components/crypto/crypto-detail-skeleton";
 
-export default function CityPage() {
+export default function CryptoPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [weatherData, setWeatherData] = useState(null);
 
-  // Get lat and lon from query parameters
-  const lat = searchParams.get("lat");
-  const lon = searchParams.get("lon");
+  // Get the crypto id from query parameters
+  const cryptoId = searchParams.get("id");
+
+  // List of valid cryptos
+  const validCryptos = ["bitcoin", "ethereum", "solana"];
+
+  // Map of crypto ids to display names
+  const cryptoNames: Record<string, string> = {
+    bitcoin: "Bitcoin",
+    ethereum: "Ethereum",
+    solana: "Solana",
+  };
 
   useEffect(() => {
-    if (!lat || !lon) {
+    // If no crypto id is provided or it's invalid, redirect to dashboard
+    if (!cryptoId || !validCryptos.includes(cryptoId.toLowerCase())) {
       router.push("/");
-      return;
+    } else {
+      setLoading(false);
     }
+  }, [cryptoId, router]);
 
-    // Fetch weather data from OpenWeatherMap
-    async function fetchWeather() {
-      try {
-        const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-        const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch weather data");
-        }
-
-        const data = await response.json();
-        setWeatherData(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching weather:", error);
-        router.push("/");
-      }
-    }
-
-    fetchWeather();
-  }, [lat, lon, router]);
-
-  if (loading || !weatherData) {
-    return <CityDetailSkeleton />;
+  if (loading || !cryptoId) {
+    return <CryptoDetailSkeleton />;
   }
 
   return (
@@ -63,10 +50,11 @@ export default function CityPage() {
         </Button>
       </div>
 
-      <h1 className="text-3xl font-bold">Weather Details</h1>
+      <h1 className="text-3xl font-bold">
+        {cryptoNames[cryptoId.toLowerCase()]} Details
+      </h1>
 
-      {/* Pass the weather data to CityDetail component */}
-      <CityDetail weatherData={weatherData} />
+      <CryptoDetail cryptoId={cryptoId.toLowerCase()} />
     </main>
   );
 }
