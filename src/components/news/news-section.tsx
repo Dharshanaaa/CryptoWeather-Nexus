@@ -10,9 +10,7 @@ export default async function NewsSection() {
 
   return (
     <div className="space-y-4">
-      {topNews.map((news, index) => (
-        <NewsCard key={index} news={news} />
-      ))}
+      <NewsCard />
     </div>
   );
 }
