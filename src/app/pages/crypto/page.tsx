@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { ChevronLeft } from "lucide-react";
 import CryptoDetail from "@/components/crypto/crypto-detail";
 import { CryptoDetailSkeleton } from "@/components/crypto/crypto-detail-skeleton";
 
-export default function CryptoPage() {
+function CryptoPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ export default function CryptoPage() {
     } else {
       setLoading(false);
     }
-  }, [cryptoId, router]);
+  }, [cryptoId, router, validCryptos]); // Added validCryptos to dependency array
 
   if (loading || !cryptoId) {
     return <CryptoDetailSkeleton />;
@@ -56,5 +56,13 @@ export default function CryptoPage() {
 
       <CryptoDetail cryptoId={cryptoId.toLowerCase()} />
     </main>
+  );
+}
+
+export default function CryptoPage() {
+  return (
+    <Suspense fallback={<CryptoDetailSkeleton />}>
+      <CryptoPageContent />
+    </Suspense>
   );
 }
