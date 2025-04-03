@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY || "9621e70149d1dc2a9909b93c1c22c4de";
+const API_KEY = process.env.NEXT_PUBLIC_WEATHER_URL ;
 const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
 // Function to fetch current weather data using latitude and longitude

@@ -99,7 +99,7 @@ export default function CityPage() {
     }
 
     const fetchWeatherData = () => {
-      const apiKey = "9621e70149d1dc2a9909b93c1c22c4de"; // Should be an environment variable
+      const apiKey = process.env.NEXT_PUBLIC_WEATHER_URL; // Should be an environment variable
 
       axios
         .get(`https://api.openweathermap.org/data/2.5/forecast`, {

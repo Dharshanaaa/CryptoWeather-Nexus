@@ -36,13 +36,14 @@ export default function NewsCard() {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const apikey = process.env.NEXT_PUBLIC_NEWS_URL;
+  console.log(apikey);
   useEffect(() => {
     const fetchCryptoNews = async () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://newsdata.io/api/1/latest?apikey=pub_77759cea71d95afe1dcce648f4ba12321b721&q=crypto"
+          `https://newsdata.io/api/1/latest?apikey=${apikey}&q=crypto`
         );
 
         if (!response.ok) {
