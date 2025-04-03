@@ -7,7 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Cloud, CloudRain, Sun, Droplets } from "lucide-react";
+import { Cloud, CloudRain, Sun, Droplets, Star } from "lucide-react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/store/store";
+import { toggleFavorite } from "@/store/favoriteSlice";
 
 interface WeatherData {
   temperature: number;
@@ -21,7 +24,11 @@ interface WeatherCardProps {
 }
 
 export default function WeatherCard({ city, weatherData }: WeatherCardProps) {
-  // Function to determine which weather icon to display
+  const dispatch = useDispatch();
+  const isFavorite = useSelector(
+    (state: RootState) => state.favorite.cities[city]
+  );
+
   const getWeatherIcon = (condition: string) => {
     switch (condition.toLowerCase()) {
       case "clear":
@@ -39,6 +46,12 @@ export default function WeatherCard({ city, weatherData }: WeatherCardProps) {
         <CardTitle className="flex justify-between items-center">
           {city}
           {getWeatherIcon(weatherData.condition)}
+          <Star
+            className={`h-5 w-5 cursor-pointer ${
+              isFavorite ? "fill-yellow-400 text-yellow-400" : "text-gray-400"
+            }`}
+            onClick={() => dispatch(toggleFavorite(city))}
+          />
         </CardTitle>
         <CardDescription>{weatherData.condition}</CardDescription>
       </CardHeader>
