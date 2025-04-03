@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { fetchWeatherData } from "@/lib/api/weather-api";
 import WeatherCard from "./weather-card";
+import { useEffect, useState } from "react";
 
-export default async function WeatherSection() {
+export default function WeatherSection() {
   // Locations to display
   const locations = [
     { lat: 40.7128, lon: -74.006 }, // New York
@@ -10,11 +11,18 @@ export default async function WeatherSection() {
     { lat: 35.6895, lon: 139.6917 }, // Tokyo
   ];
 
-  // Fetch weather data for all locations in parallel
-  const weatherDataPromises = locations.map(({ lat, lon }) =>
-    fetchWeatherData(lat, lon)
-  );
-  const weatherData = await Promise.all(weatherDataPromises);
+  const [weatherData, setWeatherData] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch weather data for all locations in parallel
+    const weatherDataPromises = locations.map(({ lat, lon }) =>
+      fetchWeatherData(lat, lon)
+    );
+
+    Promise.all(weatherDataPromises)
+      .then((data) => setWeatherData(data))
+      .catch((error) => console.error("Error fetching weather data:", error));
+  }, []); // Empty dependency array means this runs once on mount
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

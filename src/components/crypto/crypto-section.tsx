@@ -1,14 +1,20 @@
 import Link from "next/link";
 import { fetchCryptoData } from "@/lib/api/crypto-api";
 import CryptoCard from "./crypto-card";
+import { useEffect, useState } from "react";
 
-export default async function CryptoSection() {
+export default function CryptoSection() {
   // Cryptos to display
   const cryptos = ["bitcoin", "ethereum", "solana"];
+  const [cryptoData, setCryptoData] = useState<any[]>([]);
 
-  // Fetch crypto data for all cryptos in parallel
-  const cryptoDataPromises = cryptos.map((crypto) => fetchCryptoData(crypto));
-  const cryptoData = await Promise.all(cryptoDataPromises);
+  useEffect(() => {
+    // Fetch crypto data for all cryptos in parallel
+    const cryptoDataPromises = cryptos.map((crypto) => fetchCryptoData(crypto));
+    Promise.all(cryptoDataPromises)
+      .then((data) => setCryptoData(data))
+      .catch((error) => console.error("Error fetching crypto data:", error));
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -1,5 +1,5 @@
 "use client";
-
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -98,28 +98,27 @@ export default function CityPage() {
       return;
     }
 
-    const fetchWeatherData = async () => {
-      try {
-        // In a real app, you would fetch from the API using the lat and lon
-        // For this example, we'll use the provided data directly
-        const apiKey = "51cc721d524505109917167fed671120"; // This would normally be an environment variable
+    const fetchWeatherData = () => {
+      const apiKey = "9621e70149d1dc2a9909b93c1c22c4de"; // Should be an environment variable
 
-        // Simulating API response with the provided data
-        // In a real app, you would use:
-        const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`
-        );
-        const data = await response.json();
-
-        setWeatherData(data as WeatherData);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching weather data:", err);
-        setError("Failed to fetch weather data. Please try again.");
-        setLoading(false);
-      }
+      axios
+        .get(`https://api.openweathermap.org/data/2.5/forecast`, {
+          params: {
+            lat: lat,
+            lon: lon,
+            appid: apiKey,
+          },
+        })
+        .then((response) => {
+          setWeatherData(response.data as WeatherData);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching weather data:", err);
+          setError("Failed to fetch weather data. Please try again.");
+          setLoading(false);
+        });
     };
-
     fetchWeatherData();
   }, [lat, lon, router]);
 

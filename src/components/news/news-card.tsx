@@ -42,7 +42,7 @@ export default function NewsCard() {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://newsdata.io/api/1/latest?apikey=pub_7769018ec61421602b059b42b68036b6dde15&q=crypto"
+          "https://newsdata.io/api/1/latest?apikey=pub_77759cea71d95afe1dcce648f4ba12321b721&q=crypto"
         );
 
         if (!response.ok) {
@@ -56,15 +56,15 @@ export default function NewsCard() {
         }
 
         const news = data.results
-          .filter((item) => item.title) // Filter out items without title
-          .slice(0, 5) // Get top 5 news
+          .filter((item) => item.title)
+          .slice(0, 5)
           .map((item) => ({
             title: item.title,
             description: item.description || "No description available",
             url: item.link,
             source: item.source_name,
             publishedAt: new Date(item.pubDate).toLocaleDateString(),
-            imageUrl: item.image_url || "/placeholder.svg?height=64&width=96",
+            imageUrl: item.image_url || "",
           }));
 
         setNewsItems(news);
@@ -79,6 +79,10 @@ export default function NewsCard() {
 
     fetchCryptoNews();
   }, []);
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+  };
 
   return (
     <div className="container max-w-4xl mx-auto py-8 px-4">
@@ -107,15 +111,18 @@ export default function NewsCard() {
             <ul className="space-y-4">
               {newsItems.map((news, index) => (
                 <li key={index} className="flex items-start gap-4">
-                  <img
-                    src={news.imageUrl}
-                    alt={news.title}
-                    className="h-16 w-24 object-cover rounded-md"
-                    onError={(e) =>
-                      (e.currentTarget.src =
-                        "/placeholder.svg?height=64&width=96")
-                    }
-                  />
+                  {news.imageUrl ? (
+                    <img
+                      src={news.imageUrl}
+                      alt={news.title}
+                      className="h-16 w-24 object-cover rounded-md"
+                      onError={handleImageError}
+                    />
+                  ) : (
+                    <div className="h-16 w-24 bg-gray-100 rounded-md flex items-center justify-center">
+                      <span className="text-xs text-gray-500">No image</span>
+                    </div>
+                  )}
                   <div>
                     <CardTitle className="text-lg">{news.title}</CardTitle>
                     <CardDescription>
