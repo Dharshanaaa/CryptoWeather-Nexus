@@ -8,6 +8,8 @@ import NewsSection from "@/components/news/news-section";
 import { WeatherSkeleton } from "@/components/weather/weather-skeleton";
 import { CryptoSkeleton } from "@/components/crypto/crypto-skeleton";
 import { NewsSkeleton } from "@/components/news/news-skeleton";
+import { NotificationButton } from "@/components/notifications/notification-button";
+import { formatCryptoData } from "@/components/crypto/format-crypto-data";
 
 export default function Dashboard() {
   useEffect(() => {
@@ -15,21 +17,45 @@ export default function Dashboard() {
       "wss://ws.coincap.io/prices?assets=bitcoin,ethereum,monero,litecoin"
     );
 
+    let lastPrices: { [key: string]: string } = {};
+
     pricesWs.onmessage = (msg) => {
       console.log("New Crypto Update:", msg.data);
 
-      // Show a browser notification
-      if (Notification.permission === "granted") {
-        new Notification("Crypto Update", {
-          body: `Price Update: ${msg.data}`,
-        });
-      } else if (Notification.permission !== "denied") {
-        Notification.requestPermission().then((permission) => {
-          if (permission === "granted") {
-            new Notification("Crypto Update", {
-              body: `Price Update: ${msg.data}`,
-            });
+      // Format the crypto data
+      const formattedData = formatCryptoData(msg.data);
+
+      // Create notification message
+      const updates = Object.entries(formattedData)
+        .map(([coin, price]) => {
+          const previousPrice = lastPrices[coin];
+          let trend = "";
+
+          if (previousPrice) {
+            const prev = Number.parseFloat(
+              previousPrice.replace("$", "").replace(",", "")
+            );
+            const current = Number.parseFloat(
+              price.replace("$", "").replace(",", "")
+            );
+            trend = current > prev ? "↑" : current < prev ? "↓" : "";
           }
+
+          return `${
+            coin.charAt(0).toUpperCase() + coin.slice(1)
+          }: ${price} ${trend}`;
+        })
+        .join("\n");
+
+      // Update last prices
+      lastPrices = { ...lastPrices, ...formattedData };
+
+      // Add notification using the global function we exposed
+      if (window.addCryptoNotification && updates) {
+        window.addCryptoNotification({
+          title: "Crypto Price Update",
+          message: updates,
+          type: "info",
         });
       }
     };
@@ -41,7 +67,10 @@ export default function Dashboard() {
 
   return (
     <main className="container mx-auto p-4 space-y-8">
-      <h1 className="text-3xl font-bold">CryptoWeather Nexus Dashboard</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">CryptoWeather Nexus Dashboard</h1>
+        <NotificationButton />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="col-span-1 md:col-span-2 lg:col-span-3">

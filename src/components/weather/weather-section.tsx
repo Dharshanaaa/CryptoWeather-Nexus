@@ -4,17 +4,16 @@ import WeatherCard from "./weather-card";
 import { useEffect, useState } from "react";
 
 export default function WeatherSection() {
-  // Locations to display
+  // Locations with city names
   const locations = [
-    { lat: 40.7128, lon: -74.006 }, // New York
-    { lat: 51.5074, lon: -0.1278 }, // London
-    { lat: 35.6895, lon: 139.6917 }, // Tokyo
+    { lat: 40.7128, lon: -74.006, city: "New York" },
+    { lat: 51.5074, lon: -0.1278, city: "London" },
+    { lat: 35.6895, lon: 139.6917, city: "Tokyo" },
   ];
 
   const [weatherData, setWeatherData] = useState<any[]>([]);
 
   useEffect(() => {
-    // Fetch weather data for all locations in parallel
     const weatherDataPromises = locations.map(({ lat, lon }) =>
       fetchWeatherData(lat, lon)
     );
@@ -22,7 +21,7 @@ export default function WeatherSection() {
     Promise.all(weatherDataPromises)
       .then((data) => setWeatherData(data))
       .catch((error) => console.error("Error fetching weather data:", error));
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -32,11 +31,7 @@ export default function WeatherSection() {
           href={`/pages/city?lat=${locations[index].lat}&lon=${locations[index].lon}`}
           className="block transition-transform hover:scale-[1.02]"
         >
-          <WeatherCard
-            lat={locations[index].lat}
-            lon={locations[index].lon}
-            weatherData={data}
-          />
+          <WeatherCard city={locations[index].city} weatherData={data} />
         </Link>
       ))}
     </div>
